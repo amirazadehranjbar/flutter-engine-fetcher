@@ -7,13 +7,24 @@ jobs:
   fetch:
     runs-on: ubuntu-latest
     steps:
-      - name: Download android-arm-profile/windows-x64.zip
-        run: |
-          mkdir engine
-          cd engine
-          wget https://storage.googleapis.com/flutter_infra_release/flutter/6c0baaebf70e0148f485f27d5616b3d3382da7bf/android-arm-profile/windows-x64.zip
+      - name: Ensure engine folder exists
+        run: mkdir -p engine
 
-      - name: Upload Artifact
+      - name: Download engine artifact (curl -L)
+        run: |
+          cd engine
+          curl -L -o windows-x64.zip \
+            https://storage.googleapis.com/flutter_infra_release/flutter/6c0baaebf70e0148f485f27d5616b3d3382da7bf/android-arm-profile/windows-x64.zip
+
+      - name: Verify downloaded file
+        run: |
+          ls -lh engine
+          if [ ! -s engine/windows-x64.zip ]; then
+            echo "Download FAILED — file is missing or empty"
+            exit 1
+          fi
+
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: windows-x64
