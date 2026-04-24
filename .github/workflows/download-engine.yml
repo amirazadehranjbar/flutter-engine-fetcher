@@ -6,26 +6,23 @@ on:
 jobs:
   fetch:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Ensure engine folder exists
-        run: mkdir -p engine
-
-      - name: Download engine artifact (curl -L)
+      - name: Download engine artifact
         run: |
+          mkdir engine
           cd engine
-          curl -L -o windows-x64.zip \
-            https://storage.googleapis.com/flutter_infra_release/flutter/6c0baaebf70e0148f485f27d5616b3d3382da7bf/android-arm-profile/windows-x64.zip
 
-      - name: Verify downloaded file
-        run: |
-          ls -lh engine
-          if [ ! -s engine/windows-x64.zip ]; then
-            echo "Download FAILED — file is missing or empty"
-            exit 1
-          fi
+          URL="https://storage.googleapis.com/flutter_infra_release/flutter/6c0baaebf70e0148f485f27d5616b3d3382da7bf/android-arm-profile/windows-x64.zip"
+
+          echo "Downloading $URL"
+          curl -L --fail "$URL" -o windows-x64.zip
+
+          ls -lh
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: windows-x64
+          name: flutter-engine
           path: engine/windows-x64.zip
+
